@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Digital - Sistema de Gerenciamento</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-background">
+            <div class="books-decoration">
+                <div class="book book-1"></div>
+                <div class="book book-2"></div>
+                <div class="book book-3"></div>
+                <div class="book book-4"></div>
+            </div>
+        </div>
+        <div class="login-container">
+            <div class="login-header">
+                <div class="library-icon"></div>
+                <h1>Biblioteca Digital</h1>
+                <p class="subtitle">Sistema de Gerenciamento</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">
+                        <span class="icon"></span>
+                        Email
+                    </label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="senha">
+                        <span class="icon"></span>
+                        Senha
+                    </label>
+                    <input type="password" id="senha" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-login">
+                    <span>Entrar</span>
+                    <span class="arrow">→</span>
+                </button>
+                <div id="loginError" class="error-message"></div>
+            </form>
+            <div class="login-footer">
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela Principal -->
+    <div id="mainScreen" class="screen">
+        <header class="main-header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="Logo.png" alt="Logo Biblioteca" class="logo-icon">
+                    <div>
+                        <h1>Biblioteca Digital</h1>
+                        <p class="tagline">Gerenciamento Inteligente</p>
+                    </div>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span></span>
+                </div>
+                <div class="user-details">
+                    <span id="userEmail" class="user-email"></span>
+                    <span class="user-role">Bibliotecário</span>
+                </div>
+                <button id="logoutBtn" class="btn-logout">
+                    <span>Sair</span>
+                    <span class="icon"></span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="autores">
+                <span class="tab-icon"></span>
+                <span>Autores</span>
+            </button>
+            <button class="tab-btn" data-tab="livros">
+                <span class="tab-icon"></span>
+                <span>Livros</span>
+            </button>
+            <button class="tab-btn" data-tab="usuarios">
+                <span class="tab-icon"></span>
+                <span>Usuários</span>
+            </button>
+            <button class="tab-btn" data-tab="emprestimos">
+                <span class="tab-icon"></span>
+                <span>Empréstimos</span>
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <!-- Dashboard de Estatísticas -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-livros"></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statLivros">0</div>
+                        <div class="stat-label">Livros</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-autores"></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statAutores">0</div>
+                        <div class="stat-label">Autores</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-usuarios"></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statUsuarios">0</div>
+                        <div class="stat-label">Usuários</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-emprestimos"></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statEmprestimos">0</div>
+                        <div class="stat-label">Empréstimos Ativos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Autores -->
+            <div id="autores" class="tab-content active">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Gerenciar Autores</h2>
+                        <p>Cadastre e gerencie os autores da biblioteca</p>
+                    </div>
+                    <button class="btn-primary" onclick="showAutorForm()">
+                        <span>+</span>
+                        <span>Novo Autor</span>
+                    </button>
+                </div>
+                <div id="autoresList" class="content-grid"></div>
+            </div>
+
+            <!-- Tab Livros -->
+            <div id="livros" class="tab-content">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Gerenciar Livros</h2>
+                        <p>Controle o acervo da biblioteca</p>
+                    </div>
+                    <button class="btn-primary" onclick="showLivroForm()">
+                        <span>+</span>
+                        <span>Novo Livro</span>
+                    </button>
+                </div>
+                <div class="filters">
+                    <div class="filter-group">
+                        <span class="filter-icon"></span>
+                        <input type="text" id="livroSearch" placeholder="Buscar por título..." onkeyup="buscarLivros()">
+                    </div>
+                    <select id="statusFilter" onchange="buscarLivros()">
+                        <option value="">Todos os status</option>
+                        <option value="Disponivel">Disponível</option>
+                        <option value="Emprestado">Emprestado</option>
+                    </select>
+                </div>
+                <div id="livrosList" class="content-grid"></div>
+            </div>
+
+            <!-- Tab Usuários -->
+            <div id="usuarios" class="tab-content">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Gerenciar Usuários</h2>
+                        <p>Administre os usuários do sistema</p>
+                    </div>
+                    <button class="btn-primary" onclick="showUsuarioForm()">
+                        <span>+</span>
+                        <span>Novo Usuário</span>
+                    </button>
+                </div>
+                <div id="usuariosList" class="content-grid"></div>
+            </div>
+
+            <!-- Tab Empréstimos -->
+            <div id="emprestimos" class="tab-content">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Gerenciar Empréstimos</h2>
+                        <p>Controle de empréstimos e devoluções</p>
+                    </div>
+                    <button class="btn-primary" onclick="showEmprestimoForm()">
+                        <span>+</span>
+                        <span>Novo Empréstimo</span>
+                    </button>
+                </div>
+                <div class="filters">
+                    <select id="emprestimoStatusFilter" onchange="carregarEmprestimos()">
+                        <option value="">Todos</option>
+                        <option value="Ativo">Ativos</option>
+                        <option value="Devolvido">Devolvidos</option>
+                    </select>
+                    <button class="btn-secondary" onclick="carregarEmprestimosAtrasados()">
+                        <span></span>
+                        <span>Ver Atrasados</span>
+                    </button>
+                </div>
+                <div id="emprestimosList" class="content-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

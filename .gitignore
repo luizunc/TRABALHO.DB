@@ -1,0 +1,15 @@
+# Maven - arquivos compilados e gerados
+back-end/target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
