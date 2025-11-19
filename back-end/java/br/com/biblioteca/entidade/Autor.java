@@ -3,6 +3,7 @@ package br.com.biblioteca.entidade;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"livros"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "livros"})
 public class Autor {
     

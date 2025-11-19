@@ -21,7 +21,7 @@ public class ServicoAutor {
     @Autowired
     private ServicoGeradorId servicoGeradorId;
 
-    @Autowired
+    @Autowired(required = false)
     private RedisTemplate<String, Object> templateRedis;
 
     @Cacheable(value = "autores", key = "#id")

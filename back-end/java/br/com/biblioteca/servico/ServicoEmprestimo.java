@@ -12,7 +12,6 @@ import jakarta.persistence.StoredProcedureQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ServicoEmprestimo {
@@ -40,9 +38,6 @@ public class ServicoEmprestimo {
     @Autowired
     private EntityManager gerenciadorEntidade;
 
-    @Autowired
-    private RedisTemplate<String, Object> templateRedis;
-
     @Cacheable(value = "emprestimos", key = "#id")
     public Optional<Emprestimo> buscarPorId(String id) {
         return repositorioEmprestimo.findById(id);
@@ -55,25 +50,10 @@ public class ServicoEmprestimo {
     }
 
     public List<Emprestimo> buscarPorStatus(String status) {
-        String chaveCache = "emprestimos:status:" + status;
-        @SuppressWarnings("unchecked")
-        List<Emprestimo> emCache = (List<Emprestimo>) templateRedis.opsForValue().get(chaveCache);
-        if (emCache != null && !emCache.isEmpty()) {
-            List<Emprestimo> validos = emCache.stream()
-                .filter(emp -> emp != null && emp.getIdEmprestimo() != null)
-                .collect(java.util.stream.Collectors.toList());
-            if (!validos.isEmpty()) {
-                return validos;
-            }
-        }
+        // Não usar RedisTemplate diretamente - usar apenas cache do Spring
         List<Emprestimo> emprestimos = repositorioEmprestimo.buscarPorStatus(status);
         if (emprestimos == null) {
             emprestimos = java.util.Collections.emptyList();
-        }
-        if (emprestimos.isEmpty()) {
-            templateRedis.delete(chaveCache);
-        } else {
-            templateRedis.opsForValue().set(chaveCache, emprestimos, 5, TimeUnit.MINUTES);
         }
         return emprestimos;
     }
@@ -123,7 +103,6 @@ public class ServicoEmprestimo {
             throw new RuntimeException(resultado);
         }
 
-        templateRedis.delete("emprestimos:status:*");
         return repositorioEmprestimo.findById(idEmprestimo)
             .orElseThrow(() -> new RuntimeException("Erro ao recuperar empréstimo criado"));
     }
@@ -152,8 +131,6 @@ public class ServicoEmprestimo {
         if (!resultado.startsWith("SUCESSO")) {
             throw new RuntimeException(resultado);
         }
-
-        templateRedis.delete("emprestimos:status:*");
         return repositorioEmprestimo.findById(idEmprestimo)
             .orElseThrow(() -> new RuntimeException("Erro ao recuperar empréstimo atualizado"));
     }

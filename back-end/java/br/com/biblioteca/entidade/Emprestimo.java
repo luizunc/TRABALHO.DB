@@ -3,6 +3,7 @@ package br.com.biblioteca.entidade;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"usuario", "livro"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Emprestimo {
     

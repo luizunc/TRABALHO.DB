@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ServicoLivro {
@@ -27,7 +26,7 @@ public class ServicoLivro {
     @Autowired
     private ServicoGeradorId servicoGeradorId;
 
-    @Autowired
+    @Autowired(required = false)
     private RedisTemplate<String, Object> templateRedis;
 
     @Cacheable(value = "livros", key = "#id")
@@ -41,14 +40,8 @@ public class ServicoLivro {
     }
 
     public List<Livro> buscarPorStatus(String status) {
-        String chaveCache = "livros:status:" + status;
-        @SuppressWarnings("unchecked")
-        List<Livro> emCache = (List<Livro>) templateRedis.opsForValue().get(chaveCache);
-        if (emCache != null) {
-            return emCache;
-        }
+        // Não usar RedisTemplate diretamente - usar apenas cache do Spring
         List<Livro> livros = repositorioLivro.buscarPorStatus(status);
-        templateRedis.opsForValue().set(chaveCache, livros, 10, TimeUnit.MINUTES);
         return livros;
     }
 
@@ -65,7 +58,9 @@ public class ServicoLivro {
         if (livro.getStatus() == null) {
             livro.setStatus("Disponivel");
         }
-        templateRedis.delete("livros:status:*");
+        if (templateRedis != null) {
+            templateRedis.delete("livros:status:*");
+        }
         return repositorioLivro.save(livro);
     }
 
@@ -82,7 +77,9 @@ public class ServicoLivro {
             livro.setAutor(livroAtualizado.getAutor());
         }
         
-        templateRedis.delete("livros:status:*");
+        if (templateRedis != null) {
+            templateRedis.delete("livros:status:*");
+        }
         return repositorioLivro.save(livro);
     }
 
@@ -90,7 +87,9 @@ public class ServicoLivro {
     @Transactional
     public void deletar(String id) {
         repositorioLivro.deleteById(id);
-        templateRedis.delete("livros:status:*");
+        if (templateRedis != null) {
+            templateRedis.delete("livros:status:*");
+        }
     }
 }
 

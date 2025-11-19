@@ -23,7 +23,7 @@ public class ServicoUsuario {
     @Autowired
     private ServicoGeradorId servicoGeradorId;
 
-    @Autowired
+    @Autowired(required = false)
     private RedisTemplate<String, Object> templateRedis;
 
     @Cacheable(value = "usuarios", key = "#id")
@@ -42,7 +42,9 @@ public class ServicoUsuario {
         if (usuario.getIdUsuario() == null) {
             usuario.setIdUsuario(servicoGeradorId.gerarIdUsuario());
         }
-        templateRedis.opsForValue().set("usuario:" + usuario.getIdUsuario(), usuario, 10, TimeUnit.MINUTES);
+        if (templateRedis != null) {
+            templateRedis.opsForValue().set("usuario:" + usuario.getIdUsuario(), usuario, 10, TimeUnit.MINUTES);
+        }
         return repositorioUsuario.save(usuario);
     }
 
@@ -57,7 +59,9 @@ public class ServicoUsuario {
         usuario.setMatricula(usuarioAtualizado.getMatricula());
         usuario.setAtivo(usuarioAtualizado.getAtivo());
         
-        templateRedis.delete("usuario:" + id);
+        if (templateRedis != null) {
+            templateRedis.delete("usuario:" + id);
+        }
         return repositorioUsuario.save(usuario);
     }
 
@@ -65,7 +69,9 @@ public class ServicoUsuario {
     @Transactional
     public void deletar(String id) {
         repositorioUsuario.deleteById(id);
-        templateRedis.delete("usuario:" + id);
+        if (templateRedis != null) {
+            templateRedis.delete("usuario:" + id);
+        }
     }
 
     public Optional<Usuario> buscarPorEmail(String email) {
