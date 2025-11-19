@@ -38,24 +38,21 @@ public class ServicoEmprestimo {
     @Autowired
     private EntityManager gerenciadorEntidade;
 
-    @Cacheable(value = "emprestimos", key = "#id")
+    // Não cachear Optional - pode causar problemas de deserialização
     public Optional<Emprestimo> buscarPorId(String id) {
         return repositorioEmprestimo.findById(id);
     }
 
-    @Cacheable(value = "emprestimos")
+    // Não usar cache - sempre buscar dados atualizados do banco
     public List<Emprestimo> listarTodos() {
         List<Emprestimo> emprestimos = repositorioEmprestimo.findAll();
         return emprestimos != null ? emprestimos : java.util.Collections.emptyList();
     }
 
+    // Não usar cache - sempre buscar dados atualizados do banco
     public List<Emprestimo> buscarPorStatus(String status) {
-        // Não usar RedisTemplate diretamente - usar apenas cache do Spring
         List<Emprestimo> emprestimos = repositorioEmprestimo.buscarPorStatus(status);
-        if (emprestimos == null) {
-            emprestimos = java.util.Collections.emptyList();
-        }
-        return emprestimos;
+        return emprestimos != null ? emprestimos : java.util.Collections.emptyList();
     }
 
     public List<Emprestimo> buscarPorUsuario(String idUsuario) {
@@ -66,7 +63,7 @@ public class ServicoEmprestimo {
         return repositorioEmprestimo.buscarEmprestimosAtrasados(LocalDate.now());
     }
 
-    @CacheEvict(value = "emprestimos", allEntries = true)
+    @CacheEvict(value = {"emprestimos", "livros"}, allEntries = true)
     @Transactional
     public Emprestimo realizarEmprestimo(String idUsuario, String idLivro, int diasEmprestimo) {
         Usuario usuario = repositorioUsuario.findById(idUsuario)
@@ -107,7 +104,7 @@ public class ServicoEmprestimo {
             .orElseThrow(() -> new RuntimeException("Erro ao recuperar empréstimo criado"));
     }
 
-    @CacheEvict(value = "emprestimos", allEntries = true)
+    @CacheEvict(value = {"emprestimos", "livros"}, allEntries = true)
     @Transactional
     public Emprestimo devolverEmprestimo(String idEmprestimo) {
         Emprestimo emprestimo = repositorioEmprestimo.findById(idEmprestimo)

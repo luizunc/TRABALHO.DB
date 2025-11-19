@@ -24,7 +24,7 @@ public class ServicoAutor {
     @Autowired(required = false)
     private RedisTemplate<String, Object> templateRedis;
 
-    @Cacheable(value = "autores", key = "#id")
+    // Não cachear Optional - pode causar problemas de deserialização
     public Optional<Autor> buscarPorId(String id) {
         return repositorioAutor.findById(id);
     }

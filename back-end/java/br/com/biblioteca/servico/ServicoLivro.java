@@ -29,20 +29,20 @@ public class ServicoLivro {
     @Autowired(required = false)
     private RedisTemplate<String, Object> templateRedis;
 
-    @Cacheable(value = "livros", key = "#id")
+    // Não cachear Optional - pode causar problemas de deserialização
     public Optional<Livro> buscarPorId(String id) {
         return repositorioLivro.findById(id);
     }
 
-    @Cacheable(value = "livros")
+    // Não usar cache - sempre buscar dados atualizados do banco
     public List<Livro> listarTodos() {
         return repositorioLivro.findAll();
     }
 
+    // Não usar cache - sempre buscar dados atualizados do banco
     public List<Livro> buscarPorStatus(String status) {
-        // Não usar RedisTemplate diretamente - usar apenas cache do Spring
         List<Livro> livros = repositorioLivro.buscarPorStatus(status);
-        return livros;
+        return livros != null ? livros : java.util.Collections.emptyList();
     }
 
     public List<Livro> buscarPorTitulo(String titulo) {

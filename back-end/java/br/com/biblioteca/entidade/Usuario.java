@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"grupos", "emprestimos"})
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "senha", "emprestimos"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "senha", "emprestimos", "grupos"})
 public class Usuario {
     
     @Id

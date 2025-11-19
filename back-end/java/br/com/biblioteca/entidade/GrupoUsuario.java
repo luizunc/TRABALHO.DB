@@ -1,7 +1,9 @@
 package br.com.biblioteca.entidade;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -13,6 +15,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"usuarios"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "usuarios"})
 public class GrupoUsuario {
     
     @Id
